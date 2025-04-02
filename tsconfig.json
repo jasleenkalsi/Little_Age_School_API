@@ -1,7 +1,7 @@
 {
-    "compilerOptions": {
-      "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true
-    }
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true
   }
-  
+}
