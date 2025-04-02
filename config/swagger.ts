@@ -1,11 +1,24 @@
-import { Router } from 'express';
-const router = Router();
+import { Express } from 'express';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsDoc from 'swagger-jsdoc';
 
-// Example: Add all your modules here
-// router.use('/users', userRoutes);
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Little Age Playway School Management API',
+      version: '1.0.0',
+      description: 'API documentation'
+    }
+  },
+  apis: ['src/api/v1/routes/*.ts'] // adjust path as needed
+};
 
-router.get('/', (req, res) => {
-  res.send('Welcome to Playway School Management API!');
-});
+const specs = swaggerJsDoc(options);
 
-export default router;
+const swaggerDocs = (app: Express) => {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+};
+
+export default swaggerDocs;
+
