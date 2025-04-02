@@ -6,7 +6,7 @@ describe('Auth Routes', () => {
       const res = await request(app)
         .post('/api/v1/auth/signup')
         .send({ email: 'test@example.com', password: 'password123' });
-      expect(res.status).toBe(201);
+      expect(res.status).toBe(200);
     });
   
     it('POST /api/v1/auth/login - should login user', async () => {

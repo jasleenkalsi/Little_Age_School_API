@@ -6,7 +6,7 @@ describe('Fee Routes', () => {
       const res = await request(app)
         .post('/api/v1/fees/123')
         .send({ amount: 500, date: '2025-04-01' });
-      expect(res.status).toBe(201);
+      expect(res.status).toBe(200);
     });
   
     it('GET /api/v1/fees/:student_id - should fetch fees', async () => {

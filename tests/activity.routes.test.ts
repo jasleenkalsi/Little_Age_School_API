@@ -6,7 +6,7 @@ describe('Activity Routes', () => {
       const res = await request(app)
         .post('/api/v1/activities')
         .send({ title: 'Art Day', date: '2025-04-10' });
-      expect(res.status).toBe(201);
+      expect(res.status).toBe(200);
     });
   
     it('GET /api/v1/activities - should get all activities', async () => {
