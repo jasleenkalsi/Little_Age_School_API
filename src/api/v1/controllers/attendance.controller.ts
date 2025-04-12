@@ -1,34 +1,33 @@
-import { Request, Response } from 'express';
 
-let attendanceRecords: any[] = [];
+import { RequestHandler } from 'express';
+import { AttendanceRepository } from '../repository/attendance.repository';
+import { Attendance } from '../models/attendance.model';
 
-export const markAttendance = (req: Request, res: Response) => {
-  const { student_id, date, status } = req.body;
-  attendanceRecords.push({ student_id, date, status });
-  res.json({ message: 'Attendance marked successfully' });
-};
-
-export const getAttendance = (req: Request, res: Response) => {
-  const { student_id } = req.params;
-  const records = attendanceRecords.filter(a => a.student_id === parseInt(student_id));
-  res.json({ attendance: records });
-};
-
-export const updateAttendance = (req: Request, res: Response) => {
-  const { student_id, date } = req.params;
-  const { status } = req.body;
-  const record = attendanceRecords.find(a => a.student_id === parseInt(student_id) && a.date === date);
-  if (record) {
-    record.status = status;
-    res.json({ message: 'Attendance updated successfully' });
-  } else {
-    res.status(404).json({ message: 'Attendance record not found' });
+export const markAttendance: RequestHandler = async (req, res) => {
+  const { studentId, date, status } = req.body as Attendance;
+  try {
+    const record = await AttendanceRepository.mark({ studentId, date, status });
+    res.status(201).json({ message: 'Attendance marked successfully', record });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to mark attendance', error });
   }
 };
 
-export const deleteAttendance = (req: Request, res: Response) => {
-  const { student_id, date } = req.params;
-  attendanceRecords = attendanceRecords.filter(a => !(a.student_id === parseInt(student_id) && a.date === date));
-  res.json({ message: 'Attendance record deleted successfully' });
+export const getAllAttendance: RequestHandler = async (_req, res) => {
+  try {
+    const records = await AttendanceRepository.getAll();
+    res.status(200).json({ records });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch attendance', error });
+  }
 };
 
+export const getAttendanceByStudent: RequestHandler = async (req, res) => {
+  const { studentId } = req.params;
+  try {
+    const records = await AttendanceRepository.getByStudent(studentId);
+    res.status(200).json({ records });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch student attendance', error });
+  }
+};

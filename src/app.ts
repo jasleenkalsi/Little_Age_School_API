@@ -1,18 +1,21 @@
 import express from 'express';
-import cors from 'cors';
 import helmet from 'helmet';
-
-import userRouter from './api/v1/routes/user.routes'; // Make sure the path is correct
-import swaggerDocs from '../config/swagger'; // Optional Swagger setup
+import cors from 'cors';
+import userRoutes from './api/v1/routes/user.routes';
+import feeRoutes from './api/v1/routes/fee.routes';
+import attendanceRoutes from './api/v1/routes/attendance.routes';
+import activityRoutes from './api/v1/routes/activity.routes';
+import { swaggerMiddleware, swaggerHandler } from '../config/swagger';
 
 const app = express();
-
-app.use(express.json());
-app.use(cors());
 app.use(helmet());
+app.use(cors());
+app.use(express.json());
 
-app.use('/api/v1', userRouter); // ✅ Only use Router here
-
-swaggerDocs(app); // ✅ If you’re using Swagger
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/fees', feeRoutes);
+app.use('/api/v1/attendance', attendanceRoutes);
+app.use('/api/v1/activities', activityRoutes);
+app.use('/api-docs', swaggerMiddleware, swaggerHandler);
 
 export default app;

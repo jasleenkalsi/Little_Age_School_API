@@ -1,37 +1,61 @@
-import { Request, Response } from 'express';
+// ✅ Final fixed activity.controller.ts
+import { RequestHandler } from 'express';
+import { ActivityRepository } from '../repository/activity.repository';
+import { Activity } from '../models/activity.model';
 
-let activities: any[] = [];
+export const addActivity: RequestHandler = async (req, res) => {
+  const { title, date, description, createdBy, participants } = req.body as Activity;
 
-export const addActivity = (req: Request, res: Response) => {
-  const { title, date, description } = req.body;
-  activities.push({ title, date, description });
-  res.json({ message: 'Activity added successfully' });
-};
-
-export const getActivities = (req: Request, res: Response) => {
-  res.json({ activities });
-};
-
-export const updateActivity = (req: Request, res: Response) => {
-  const { title } = req.params;
-  const { date, description } = req.body;
-  const activity = activities.find(a => a.title === title);
-  if (activity) {
-    activity.date = date;
-    activity.description = description;
-    res.json({ message: 'Activity updated successfully' });
-  } else {
-    res.status(404).json({ message: 'Activity not found' });
+  try {
+    const activity = await ActivityRepository.create({
+      title,
+      date,
+      description,
+      createdBy,
+      participants
+    });
+    res.status(201).json({ message: 'Activity added successfully', activity });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to add activity', error });
   }
 };
 
-export const deleteActivity = (req: Request, res: Response) => {
-  const { title } = req.params;
-  const initialLength = activities.length;
-  activities = activities.filter(a => a.title !== title);
-  if (activities.length < initialLength) {
-    res.json({ message: 'Activity deleted successfully' });
-  } else {
-    res.status(404).json({ message: 'Activity not found' });
+export const getActivities: RequestHandler = async (_req, res) => {
+  try {
+    const activities = await ActivityRepository.getAll();
+    res.status(200).json({ activities });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch activities', error });
+  }
+};
+
+export const updateActivity: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { title, date, description } = req.body as Partial<Activity>;
+
+  try {
+    const updated = await ActivityRepository.update(id, { title, date, description });
+    if (!updated) {
+      res.status(404).json({ message: 'Activity not found' });
+    } else {
+      res.status(200).json({ message: 'Activity updated successfully', updated });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update activity', error });
+  }
+};
+
+export const deleteActivity: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deleted = await ActivityRepository.delete(id);
+    if (!deleted) {
+      res.status(404).json({ message: 'Activity not found' });
+    } else {
+      res.status(200).json({ message: 'Activity deleted successfully' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete activity', error });
   }
 };

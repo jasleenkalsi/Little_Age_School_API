@@ -20,5 +20,8 @@ const swaggerDocs = (app: Express) => {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 };
 
+export const swaggerSpec = swaggerJsDoc(options);
+export const swaggerMiddleware = swaggerUi.serve;
+export const swaggerHandler = swaggerUi.setup(swaggerSpec);
 export default swaggerDocs;
 

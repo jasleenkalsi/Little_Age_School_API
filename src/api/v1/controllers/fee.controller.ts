@@ -1,38 +1,22 @@
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express';
+import { FeeRepository } from '../repository/fee.repository';
+import { Fee } from '../models/fee.model';
 
-let fees: any[] = [];
-let paymentId = 1;
-
-export const addFee = (req: Request, res: Response) => {
-  const { student_id } = req.params;
-  const { amount, status } = req.body;
-  const payment = { student_id: parseInt(student_id), payment_id: paymentId++, amount, status, date: new Date().toISOString().split('T')[0] };
-  fees.push(payment);
-  res.json({ message: 'Payment recorded successfully' });
-};
-
-export const getFees = (req: Request, res: Response) => {
-  const { student_id } = req.params;
-  const studentFees = fees.filter(f => f.student_id === parseInt(student_id));
-  res.json({ fees: studentFees });
-};
-
-export const updateFee = (req: Request, res: Response) => {
-  const { student_id, payment_id } = req.params;
-  const { amount, status } = req.body;
-  const fee = fees.find(f => f.student_id === parseInt(student_id) && f.payment_id === parseInt(payment_id));
-  if (fee) {
-    fee.amount = amount;
-    fee.status = status;
-    res.json({ message: 'Payment updated successfully' });
-  } else {
-    res.status(404).json({ message: 'Payment not found' });
+export const createFee: RequestHandler = async (req, res) => {
+  const { studentId, amount, term } = req.body as Omit<Fee, 'id' | 'datePaid'>;
+  try {
+    const fee = await FeeRepository.create({ studentId, amount, term, datePaid: new Date() });
+    res.status(201).json({ message: 'Fee recorded successfully', fee });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to record fee', error });
   }
 };
 
-export const deleteFee = (req: Request, res: Response) => {
-  const { student_id, payment_id } = req.params;
-  fees = fees.filter(f => !(f.student_id === parseInt(student_id) && f.payment_id === parseInt(payment_id)));
-  res.json({ message: 'Payment deleted successfully' });
+export const getAllFees: RequestHandler = async (_req, res) => {
+  try {
+    const fees = await FeeRepository.getAll();
+    res.status(200).json({ fees });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to retrieve fees', error });
+  }
 };
-
