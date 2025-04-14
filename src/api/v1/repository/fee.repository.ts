@@ -1,4 +1,4 @@
-import { db } from '../../../../config/firebase';
+import { db} from '../../../../config/firebase';
 import { Fee } from '../models/fee.model';
 
 const feeRef = db.collection('fees');

@@ -6,6 +6,7 @@ import feeRoutes from './api/v1/routes/fee.routes';
 import attendanceRoutes from './api/v1/routes/attendance.routes';
 import activityRoutes from './api/v1/routes/activity.routes';
 import swaggerUi from 'swagger-ui-express';
+import authRoutes from './api/v1/routes/auth.routes';
 import { swaggerSpec } from '../config/swagger';
 
 const app = express();
@@ -18,6 +19,7 @@ app.use('/api/v1/', userRoutes);
 app.use('/api/v1/fees', feeRoutes);
 app.use('/api/v1/attendance', attendanceRoutes);
 app.use('/api/v1/activities', activityRoutes);
+app.use('/api/v1/auth', authRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 

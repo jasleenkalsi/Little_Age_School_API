@@ -1,11 +1,22 @@
 import admin from 'firebase-admin';
-import * as serviceAccount from '../little-age-school-api-firebase-adminsdk-fbsvc-2c5df15e2f.json';
+import dotenv from 'dotenv';
 
-// Initialize Firebase Admin SDK
+dotenv.config(); // 👈 This loads the .env or .env.test values
+
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+  credential: admin.credential.cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+  }),
 });
 
-// Export both admin and Firestore database
+console.log('PROJECT_ID:', process.env.FIREBASE_PROJECT_ID);
+console.log('EMAIL:', process.env.FIREBASE_CLIENT_EMAIL);
+console.log('PRIVATE_KEY START:', process.env.FIREBASE_PRIVATE_KEY?.slice(0, 30));
+
+// ✅ Add this line to fix the error
 export const db = admin.firestore();
+
+// Optional: if you're using admin elsewhere too
 export { admin };

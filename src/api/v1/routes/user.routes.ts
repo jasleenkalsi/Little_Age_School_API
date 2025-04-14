@@ -1,5 +1,5 @@
 // src/api/v1/routes/user.routes.ts
-import { Router } from 'express';
+import express from 'express';
 
 import * as UserController from '../controllers/user.controller';
 import {
@@ -18,9 +18,9 @@ import {
 
 
 import * as ActivityController from '../controllers/activity.controller';
-import * as AuthController from '../controllers/auth.controller';
+import {signup,login} from '../controllers/auth.controller';
 
-const router = Router();
+const router = express.Router();
 
 // ------------------- User Routes -------------------
 /**
@@ -206,9 +206,10 @@ router.get('/activities', ActivityController.getActivities);
 router.put('/activities/:title', ActivityController.updateActivity);
 router.delete('/activities/:title', ActivityController.deleteActivity);
 
-// ------------------- Auth Routes -------------------
-router.post('/auth/signup', AuthController.signup);
-router.post('/auth/login', AuthController.login);
+// ------------------ Auth Routes -------------------
+router.post('/auth/signup', signup);
+router.post('/auth/login', login);
+
 
 router.get('/', (req, res) => {
     res.status(200).json({ message: 'It works' });
