@@ -1,8 +1,8 @@
 export type AttendanceStatus = "Present" | "Absent" | "Leave";
 
 export interface Attendance {
-  id?: string; // ✅ made optional
+  id?: string; // optional for Firestore
   studentId: string;
-  date: Date;
+  date: string; // store as string for easier comparison
   status: AttendanceStatus;
 }

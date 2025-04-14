@@ -13,7 +13,24 @@ async function getAll(): Promise<Fee[]> {
   return snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as Omit<Fee, 'id'>) }));
 }
 
+async function getByStudentId(studentId: string): Promise<Fee[]> {
+  const snapshot = await feeRef.where('studentId', '==', studentId).get();
+  return snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as Omit<Fee, 'id'>) }));
+}
+
+async function update(id: string, data: Partial<Fee>): Promise<void> {
+  await feeRef.doc(id).update(data);
+}
+
+
+async function deleteFee(id: string): Promise<void> {
+  await feeRef.doc(id).delete();
+}
+
 export const FeeRepository = {
   create,
-  getAll
+  getAll,
+  getByStudentId,
+  delete: deleteFee,
+  update
 };

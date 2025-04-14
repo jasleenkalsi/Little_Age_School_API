@@ -3,6 +3,8 @@ import { RequestHandler } from 'express';
 import { ActivityRepository } from '../repository/activity.repository';
 import { Activity } from '../models/activity.model';
 
+
+
 export const addActivity: RequestHandler = async (req, res) => {
   const { title, date, description, createdBy, participants } = req.body as Activity;
 

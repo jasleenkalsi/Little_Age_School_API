@@ -1,5 +1,5 @@
 import admin from 'firebase-admin';
-import * as serviceAccount from '../little-age-school-api-firebase-adminsdk-fbsvc-4e300966db.json';
+import * as serviceAccount from '../little-age-school-api-firebase-adminsdk-fbsvc-2c5df15e2f.json';
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
