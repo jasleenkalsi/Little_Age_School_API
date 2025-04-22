@@ -1,20 +1,30 @@
+import { RequestHandler } from 'express';
+import { AuthService } from '../services/auth.service';
 
+export const signup: RequestHandler = async (req, res) => {
+  const { name, email, password, role } = req.body;
 
-// src/api/v1/controllers/auth.controller.ts
-import { Request, Response } from 'express';
+  if (!email || !password) {
+    res.status(400).json({ message: 'Missing email or password' });
+    return;
+  }
 
-let usersAuth: any[] = [];
-
-export const signup = (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ message: 'Missing email or password' });
-  usersAuth.push({ email, password });
-  res.status(201).json({ message: 'User created' });
+  try {
+    const newUser = await AuthService.createUser(name, email, password, role);
+    res.status(201).json({ message: 'User created', user: newUser });
+  } catch (err: any) {
+    res.status(409).json({ message: err.message });
+  }
 };
 
-export const login = (req: Request, res: Response) => {
+export const login: RequestHandler = async (req, res) => {
   const { email, password } = req.body;
-  const found = usersAuth.find(u => u.email === email && u.password === password);
-  if (found) return res.status(200).json({ token: 'fake-token' });
-  return res.status(404).json({ message: 'Invalid credentials' });
+
+  try {
+    const data = await AuthService.loginUser(email, password);
+    res.status(200).json(data);
+  } catch (err: any) {
+    const status = err.message === 'User not found' ? 404 : 401;
+    res.status(status).json({ message: err.message });
+  }
 };

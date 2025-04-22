@@ -18,7 +18,8 @@ import {
 
 
 import * as ActivityController from '../controllers/activity.controller';
-import {signup,login} from '../controllers/auth.controller';
+import { signup, login } from '../controllers/auth.controller';
+
 
 const router = express.Router();
 
