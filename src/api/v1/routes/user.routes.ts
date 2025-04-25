@@ -16,19 +16,14 @@ import {
   deleteAttendance
 } from '../controllers/attendance.controller';
 
-
-
-
 import * as ActivityController from '../controllers/activity.controller';
 import { signup, login } from '../controllers/auth.controller';
-
 
 const router = express.Router();
 
 router.get('/test', (_req, res) => {
   res.status(200).json({ message: '✅ Routes are working' });
 });
-
 
 // ------------------- User Routes -------------------
 /**
@@ -41,10 +36,57 @@ router.get('/test', (_req, res) => {
  *         description: List of users
  */
 router.get('/users', UserController.getAllUsers);
-router.put('/users/:id', UserController.updateUser); // ✅ Correct
+
+/**
+ * @swagger
+ * /api/v1/users/{id}:
+ *   put:
+ *     summary: Update user details by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               age:
+ *                 type: integer
+ *               class:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User details updated
+ *       404:
+ *         description: User not found
+ */
+router.put('/users/:id', UserController.updateUser);
+
+/**
+ * @swagger
+ * /api/v1/users/{id}:
+ *   get:
+ *     summary: Get user details by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User details
+ *       404:
+ *         description: User not found
+ */
 router.get('/users/:id', UserController.getUserById);
-
-
 
 /**
  * @swagger
@@ -57,9 +99,18 @@ router.get('/users/:id', UserController.getUserById);
  *         application/json:
  *           schema:
  *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               age:
+ *                 type: integer
+ *               class:
+ *                 type: string
  *     responses:
  *       201:
  *         description: User created
+ *       400:
+ *         description: Invalid data provided
  */
 router.post('/users', UserController.createUser);
 
@@ -67,7 +118,7 @@ router.post('/users', UserController.createUser);
  * @swagger
  * /api/v1/users/{id}:
  *   delete:
- *     summary: Delete a user
+ *     summary: Delete a user by ID
  *     parameters:
  *       - in: path
  *         name: id
@@ -77,9 +128,10 @@ router.post('/users', UserController.createUser);
  *     responses:
  *       200:
  *         description: User deleted
+ *       404:
+ *         description: User not found
  */
 router.delete('/users/:id', UserController.deleteUser);
-
 
 // ------------------- Attendance Routes -------------------
 /**
@@ -89,9 +141,23 @@ router.delete('/users/:id', UserController.deleteUser);
  *     summary: Mark student attendance
  *     requestBody:
  *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               student_id:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *                 format: date
+ *               status:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Attendance marked
+ *       400:
+ *         description: Invalid data provided
  */
 router.post('/attendance', markAttendance);
 
@@ -104,9 +170,13 @@ router.post('/attendance', markAttendance);
  *       - in: path
  *         name: student_id
  *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Attendance data
+ *       404:
+ *         description: No records found
  */
 router.get('/attendance/:student_id', getAttendanceByStudent);
 
@@ -114,17 +184,33 @@ router.get('/attendance/:student_id', getAttendanceByStudent);
  * @swagger
  * /api/v1/attendance/{student_id}/{date}:
  *   put:
- *     summary: Update attendance
+ *     summary: Update attendance for a student by date
  *     parameters:
  *       - in: path
  *         name: student_id
  *         required: true
+ *         schema:
+ *           type: string
  *       - in: path
  *         name: date
  *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Attendance updated
+ *       404:
+ *         description: Record not found
  */
 router.put('/attendance/:student_id/:date', updateAttendance);
 
@@ -132,17 +218,24 @@ router.put('/attendance/:student_id/:date', updateAttendance);
  * @swagger
  * /api/v1/attendance/{student_id}/{date}:
  *   delete:
- *     summary: Delete attendance
+ *     summary: Delete attendance record for a student
  *     parameters:
  *       - in: path
  *         name: student_id
  *         required: true
+ *         schema:
+ *           type: string
  *       - in: path
  *         name: date
  *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
  *     responses:
  *       200:
  *         description: Attendance deleted
+ *       404:
+ *         description: Record not found
  */
 router.delete('/attendance/:student_id/:date', deleteAttendance);
 
@@ -156,9 +249,28 @@ router.delete('/attendance/:student_id/:date', deleteAttendance);
  *       - in: path
  *         name: student_id
  *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 format: float
+ *               datePaid:
+ *                 type: string
+ *                 format: date
+ *               term:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Fee added
+ *       400:
+ *         description: Invalid data provided
  */
 router.post('/fees/:student_id', createFee);
 
@@ -166,14 +278,18 @@ router.post('/fees/:student_id', createFee);
  * @swagger
  * /api/v1/fees/{student_id}:
  *   get:
- *     summary: Get fees for a student
+ *     summary: Get all fees for a student
  *     parameters:
  *       - in: path
  *         name: student_id
  *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: List of fees
+ *       404:
+ *         description: No fees found
  */
 router.get('/fees/:student_id', getFees);
 
@@ -181,17 +297,38 @@ router.get('/fees/:student_id', getFees);
  * @swagger
  * /api/v1/fees/{student_id}/{payment_id}:
  *   put:
- *     summary: Update a fee record
+ *     summary: Update a fee record for a student
  *     parameters:
  *       - in: path
  *         name: student_id
  *         required: true
+ *         schema:
+ *           type: string
  *       - in: path
  *         name: payment_id
  *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 format: float
+ *               datePaid:
+ *                 type: string
+ *                 format: date
+ *               term:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Fee updated
+ *       404:
+ *         description: Fee record not found
  */
 router.put('/fees/:student_id/:payment_id', updateFee);
 
@@ -199,17 +336,23 @@ router.put('/fees/:student_id/:payment_id', updateFee);
  * @swagger
  * /api/v1/fees/{student_id}/{payment_id}:
  *   delete:
- *     summary: Delete a fee record
+ *     summary: Delete a fee record for a student
  *     parameters:
  *       - in: path
- *         name: 
+ *         name: student_id
  *         required: true
+ *         schema:
+ *           type: string
  *       - in: path
  *         name: payment_id
  *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Fee deleted
+ *       404:
+ *         description: Fee record not found
  */
 router.delete('/fees/:student_id/:payment_id', deleteFee);
 
@@ -222,8 +365,5 @@ router.delete('/activities/:title', ActivityController.deleteActivity);
 // ------------------ Auth Routes -------------------
 router.post('/auth/signup', signup);
 router.post('/auth/login', login);
-
-
-
 
 export default router;
