@@ -24,4 +24,3 @@ export const swaggerSpec = swaggerJsDoc(options);
 export const swaggerMiddleware = swaggerUi.serve;
 export const swaggerHandler = swaggerUi.setup(swaggerSpec);
 export default swaggerDocs;
-

@@ -1,26 +1,17 @@
-import admin from 'firebase-admin';
-import path from 'path';
-import fs from 'fs';
+import * as admin from 'firebase-admin';
+import * as serviceAccount from '../little-age-school-api-firebase-adminsdk-fbsvc-d5521b15d9.json';
 
-let db: FirebaseFirestore.Firestore | undefined;
+// Initialize Firebase Admin SDK
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+});
 
-if (!admin.apps.length) {
-  try {
-    const serviceAccountPath = path.join(__dirname, './little-age-school-api-firebase-adminsdk-fbsvc-d5521b15d9.json');
-    const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+// Firestore reference for the database
+export const db = admin.firestore();
 
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-
-    db = admin.firestore();
-    console.log('✅ Firebase initialized successfully');
-  } catch (error) {
-    console.error('❌ Firebase initialization failed:', error);
-  }
-}
-
-export function getDB(): FirebaseFirestore.Firestore {
-  if (!db) throw new Error('❌ Firestore is not initialized');
+// Export a function to get the Firestore database instance
+export const getDB = () => {
   return db;
-}
+};
+
+export { admin };

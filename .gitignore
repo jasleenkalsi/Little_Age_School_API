@@ -2,3 +2,4 @@ node_modules
 .env
 dist
 config/little-age-school-api-firebase-adminsdk-fbsvc-d5521b15d9.json" >> .gitignore
+
