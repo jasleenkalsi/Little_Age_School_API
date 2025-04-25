@@ -18,3 +18,8 @@ export const validate = (schema: ObjectSchema): RequestHandler => {
         next(); // Pass to the next middleware/controller
     };
 };
+
+export const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };

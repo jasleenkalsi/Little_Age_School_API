@@ -12,13 +12,13 @@ describe('User Routes', () => {
       age: 5,
       class: 'Kindergarten'
     });
-
-    expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty('id');
-    expect(res.body.name).toBe('Alice');
-    createdUserId = res.body.id;
+  
+    expect(res.status).toBe(201); // Should match the success response
+    expect(res.body).toHaveProperty('id'); // The response should contain an 'id'
+    expect(res.body.name).toBe('Alice'); // The name should match 'Alice'
+    createdUserId = res.body.id; // Store the created user id for subsequent tests
   });
-
+  
   it('should fail to create user with missing fields', async () => {
     const res = await request(app).post('/api/v1/users').send({
       age: 5
