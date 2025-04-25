@@ -1,5 +1,3 @@
-// tests/user.test.ts
-
 import request from 'supertest';
 import app from '../src/app'; // Adjust path if needed
 
@@ -12,18 +10,20 @@ describe('User Routes', () => {
       age: 5,
       class: 'Kindergarten'
     });
-  
+
     expect(res.status).toBe(201); // Should match the success response
     expect(res.body).toHaveProperty('id'); // The response should contain an 'id'
     expect(res.body.name).toBe('Alice'); // The name should match 'Alice'
-    createdUserId = res.body.id; // Store the created user id for subsequent tests
+    createdUserId = res.body.id; // Save user ID for future tests
   });
-  
+
   it('should fail to create user with missing fields', async () => {
-    const res = await request(app).post('/api/v1/users').send({
-      age: 5
-      // missing name and class
-    });
+    const res = await request(app)
+      .post('/api/v1/users')
+      .send({
+        age: 5
+        // missing name and class
+      });
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('message', 'All fields are required');
@@ -66,7 +66,7 @@ describe('User Routes', () => {
       class: 'Ghost Class'
     });
 
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(404); // It should return 404 for non-existent user
     expect(res.body).toHaveProperty('message', 'User not found');
   });
 
@@ -78,7 +78,7 @@ describe('User Routes', () => {
 
   it('should return 404 when deleting non-existent user', async () => {
     const res = await request(app).delete('/api/v1/users/99999');
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(404); // It should return 404 for non-existent user
     expect(res.body).toHaveProperty('message', 'User not found');
   });
 });

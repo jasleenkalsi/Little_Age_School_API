@@ -80,6 +80,7 @@ router.post('/users', UserController.createUser);
  */
 router.delete('/users/:id', UserController.deleteUser);
 
+
 // ------------------- Attendance Routes -------------------
 /**
  * @swagger
@@ -221,6 +222,7 @@ router.delete('/activities/:title', ActivityController.deleteActivity);
 // ------------------ Auth Routes -------------------
 router.post('/auth/signup', signup);
 router.post('/auth/login', login);
+
 
 
 
