@@ -1,39 +1,32 @@
 import { RequestHandler } from 'express';
 import { AttendanceRepository } from '../repository/attendance.repository';
-import { Attendance } from '../models/attendance.model';
 
-export const markAttendance: RequestHandler = async (req, res) => {
+// ✅ MARK ATTENDANCE
+export const markAttendance: RequestHandler = async (req, res): Promise<void> => {
   const { student_id, date, status } = req.body;
 
   if (!student_id || !date || !status) {
-    res.status(400).json({ message: 'student_id, date, and status are required' });
+    res.status(400).json({ message: 'All fields are required.' });
     return;
   }
 
   try {
     const record = await AttendanceRepository.mark({
-      studentId: student_id, // ✅ match the Firestore field
+      studentId: student_id,
       date,
-      status
+      status,
     });
-
-    res.status(201).json({ message: 'Attendance marked successfully', record });
-  } catch (error) {
-    console.error('Error marking attendance:', error); // 🪵 Add for debugging
-    res.status(500).json({ message: 'Failed to mark attendance', error });
+    res.status(201).json({
+      message: 'Attendance marked successfully',
+      record,
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: 'Failed to mark attendance', error: error.message });
   }
 };
 
-export const getAllAttendance: RequestHandler = async (_req, res) => {
-  try {
-    const records = await AttendanceRepository.getAll();
-    res.status(200).json({ records });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch attendance', error });
-  }
-};
-
-export const getAttendanceByStudent: RequestHandler = async (req, res) => {
+// ✅ GET ATTENDANCE BY STUDENT
+export const getAttendanceByStudent: RequestHandler = async (req, res): Promise<void> => {
   const { student_id } = req.params;
 
   try {
@@ -43,12 +36,14 @@ export const getAttendanceByStudent: RequestHandler = async (req, res) => {
       return;
     }
     res.status(200).json({ records });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch student attendance', error });
+  } catch (error: any) {
+    console.error('🔥 Firestore fetch error:', error.message || error);
+    res.status(500).json({ message: 'Failed to fetch student attendance', error: error.message });
   }
 };
 
-export const updateAttendance: RequestHandler = async (req, res) => {
+// ✅ UPDATE ATTENDANCE
+export const updateAttendance: RequestHandler = async (req, res): Promise<void> => {
   const { student_id, date } = req.params;
   const { status } = req.body;
 
@@ -63,14 +58,15 @@ export const updateAttendance: RequestHandler = async (req, res) => {
     if (!updated) {
       res.status(404).json({ message: 'Record not found' });
     } else {
-      res.status(200).json({ message: 'Attendance updated' });
+      res.status(200).json({ message: 'Attendance updated successfully' });
     }
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to update attendance', error });
+  } catch (error: any) {
+    res.status(500).json({ message: 'Failed to update attendance', error: error.message });
   }
 };
 
-export const deleteAttendance: RequestHandler = async (req, res) => {
+// ✅ DELETE ATTENDANCE
+export const deleteAttendance: RequestHandler = async (req, res): Promise<void> => {
   const { student_id, date } = req.params;
 
   try {
@@ -79,9 +75,9 @@ export const deleteAttendance: RequestHandler = async (req, res) => {
     if (!deleted) {
       res.status(404).json({ message: 'Record not found' });
     } else {
-      res.status(200).json({ message: 'Attendance deleted' });
+      res.status(200).json({ message: 'Attendance deleted successfully' });
     }
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to delete attendance', error });
+  } catch (error: any) {
+    res.status(500).json({ message: 'Failed to delete attendance', error: error.message });
   }
 };

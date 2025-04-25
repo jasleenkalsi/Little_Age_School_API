@@ -1,9 +1,39 @@
-import { RequestHandler } from 'express';
+import { Request, Response } from 'express';
 import { FeeRepository } from '../repository/fee.repository';
-import { Fee } from '../models/fee.model';
 
-export const createFee: RequestHandler = async (req, res): Promise<void> => {
-  const studentId = req.params.student_id;
+// ✅ Create Fee
+export const createFee = async (req: Request, res: Response): Promise<void> => {
+  const { amount, date } = req.body;
+  const { student_id } = req.params;
+
+  if (!amount || !date) {
+    res.status(400).json({ message: 'Amount and date are required' });
+    return;
+  }
+
+  try {
+    const fee = await FeeRepository.create(student_id, { amount, date });
+    res.status(201).json({ message: 'Fee added successfully', fee });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to add fee', error });
+  }
+};
+
+// ✅ Get Fees
+export const getFees = async (req: Request, res: Response): Promise<void> => {
+  const { student_id } = req.params;
+
+  try {
+    const fees = await FeeRepository.getByStudent(student_id);
+    res.status(200).json(fees);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch fees', error });
+  }
+};
+
+// ✅ Update Fee
+export const updateFee = async (req: Request, res: Response): Promise<void> => {
+  const { student_id, payment_id } = req.params;
   const { amount, date } = req.body;
 
   if (!amount || !date) {
@@ -11,59 +41,35 @@ export const createFee: RequestHandler = async (req, res): Promise<void> => {
     return;
   }
 
-  const parsedDate = new Date(date);
-  if (isNaN(parsedDate.getTime())) {
-    res.status(400).json({ message: 'Invalid date format' });
-    return;
-  }
-
   try {
-    const fee = await FeeRepository.create({
-      studentId,
-      amount,
-      term: 'Term 1',
-      datePaid: parsedDate,
-    });
+    const result = await FeeRepository.update(student_id, payment_id, { amount, date });
 
-    res.status(200).json({ message: 'Fee recorded successfully', fee });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to record fee', error });
-  }
-};
+    if (!result) {
+      res.status(404).json({ message: 'Fee not found' });
+      return;
+    }
 
-export const getFees: RequestHandler = async (req, res): Promise<void> => {
-  const studentId = req.params.student_id;
-  try {
-    const fees = await FeeRepository.getByStudentId(studentId);
-    res.status(200).json(fees);
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to retrieve fees', error });
-  }
-};
-
-export const updateFee: RequestHandler = async (req, res): Promise<void> => {
-  const { student_id, payment_id } = req.params;
-  const { amount, term } = req.body;
-
-  if (!amount || !term) {
-    res.status(400).json({ message: 'Amount and term are required' });
-    return;
-  }
-
-  try {
-    await FeeRepository.update(payment_id, { amount, term });
     res.status(200).json({ message: 'Fee updated successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to update fee', error });
   }
 };
 
-export const deleteFee: RequestHandler = async (req, res): Promise<void> => {
-  const feeId = req.params.fee_id;
+// ✅ Delete Fee
+export const deleteFee = async (req: Request, res: Response): Promise<void> => {
+  const { student_id, payment_id } = req.params;
+
   try {
-    await FeeRepository.delete(feeId);
+    const result = await FeeRepository.delete(student_id, payment_id);
+
+    if (!result) {
+      res.status(404).json({ message: 'Fee not found' });
+      return;
+    }
+
     res.status(200).json({ message: 'Fee deleted successfully' });
   } catch (error) {
+    console.error('Delete Fee Error:', error);
     res.status(500).json({ message: 'Failed to delete fee', error });
   }
 };

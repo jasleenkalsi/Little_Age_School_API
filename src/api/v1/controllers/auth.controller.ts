@@ -1,7 +1,8 @@
 import { RequestHandler } from 'express';
 import { AuthService } from '../services/auth.service';
 
-export const signup: RequestHandler = async (req, res) => {
+// ✅ Signup Handler
+export const signup: RequestHandler = async (req, res): Promise<void> => {
   const { name, email, password, role } = req.body;
 
   if (!email || !password) {
@@ -12,19 +13,24 @@ export const signup: RequestHandler = async (req, res) => {
   try {
     const newUser = await AuthService.createUser(name, email, password, role);
     res.status(201).json({ message: 'User created', user: newUser });
+    return;
   } catch (err: any) {
     res.status(409).json({ message: err.message });
+    return;
   }
 };
 
-export const login: RequestHandler = async (req, res) => {
+// ✅ Login Handler
+export const login: RequestHandler = async (req, res): Promise<void> => {
   const { email, password } = req.body;
 
   try {
     const data = await AuthService.loginUser(email, password);
     res.status(200).json(data);
+    return;
   } catch (err: any) {
     const status = err.message === 'User not found' ? 404 : 401;
     res.status(status).json({ message: err.message });
+    return;
   }
 };

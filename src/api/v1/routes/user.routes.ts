@@ -17,11 +17,18 @@ import {
 } from '../controllers/attendance.controller';
 
 
+
+
 import * as ActivityController from '../controllers/activity.controller';
 import { signup, login } from '../controllers/auth.controller';
 
 
 const router = express.Router();
+
+router.get('/test', (_req, res) => {
+  res.status(200).json({ message: '✅ Routes are working' });
+});
+
 
 // ------------------- User Routes -------------------
 /**
@@ -34,6 +41,10 @@ const router = express.Router();
  *         description: List of users
  */
 router.get('/users', UserController.getAllUsers);
+router.put('/users/:id', UserController.updateUser); // ✅ Correct
+router.get('/users/:id', UserController.getUserById);
+
+
 
 /**
  * @swagger
@@ -212,8 +223,5 @@ router.post('/auth/signup', signup);
 router.post('/auth/login', login);
 
 
-router.get('/', (req, res) => {
-    res.status(200).json({ message: 'It works' });
-  });
 
 export default router;

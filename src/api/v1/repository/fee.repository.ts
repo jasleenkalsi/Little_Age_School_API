@@ -1,36 +1,41 @@
-import { db} from '../../../../config/firebase';
-import { Fee } from '../models/fee.model';
+import { getDB } from '../../../../config/firebase';
 
-const feeRef = db.collection('fees');
-
-async function create(data: Omit<Fee, 'id'>): Promise<Fee> {
-  const docRef = await feeRef.add(data);
-  return { id: docRef.id, ...data };
-}
-
-async function getAll(): Promise<Fee[]> {
-  const snapshot = await feeRef.get();
-  return snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as Omit<Fee, 'id'>) }));
-}
-
-async function getByStudentId(studentId: string): Promise<Fee[]> {
-  const snapshot = await feeRef.where('studentId', '==', studentId).get();
-  return snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as Omit<Fee, 'id'>) }));
-}
-
-async function update(id: string, data: Partial<Fee>): Promise<void> {
-  await feeRef.doc(id).update(data);
-}
-
-
-async function deleteFee(id: string): Promise<void> {
-  await feeRef.doc(id).delete();
-}
+const feeCollection = getDB().collection('fees');
 
 export const FeeRepository = {
-  create,
-  getAll,
-  getByStudentId,
-  delete: deleteFee,
-  update
+  async create(studentId: string, data: any) {
+    const newFeeRef = feeCollection.doc();
+    const fullData = { ...data, studentId, id: newFeeRef.id };
+    await newFeeRef.set(fullData);
+    return fullData;
+  },
+
+  async getByStudent(studentId: string) {
+    const snapshot = await feeCollection.where('studentId', '==', studentId).get();
+    return snapshot.docs.map(doc => doc.data());
+  },
+
+  async update(studentId: string, feeId: string, data: any) {
+    const feeDocRef = feeCollection.doc(feeId);
+    const existing = await feeDocRef.get();
+
+    if (!existing.exists || existing.data()?.studentId !== studentId) {
+      return null; // not found
+    }
+
+    await feeDocRef.update(data);
+    return true;
+  },
+
+  async delete(studentId: string, feeId: string) {
+    const feeDocRef = feeCollection.doc(feeId);
+    const existing = await feeDocRef.get();
+
+    if (!existing.exists || existing.data()?.studentId !== studentId) {
+      return null;
+    }
+
+    await feeDocRef.delete();
+    return true;
+  }
 };

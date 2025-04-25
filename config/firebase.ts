@@ -1,25 +1,26 @@
-import * as admin from "firebase-admin";
-import dotenv from "dotenv";
+import admin from 'firebase-admin';
+import path from 'path';
+import fs from 'fs';
 
-// Load environment variables
-dotenv.config();
+let db: FirebaseFirestore.Firestore | undefined;
 
-// Initialize Firebase Admin SDK (No need for apiKey, authDomain, etc.)
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-  });
+  try {
+    const serviceAccountPath = path.join(__dirname, './little-age-school-api-firebase-adminsdk-fbsvc-d5521b15d9.json');
+    const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+
+    db = admin.firestore();
+    console.log('✅ Firebase initialized successfully');
+  } catch (error) {
+    console.error('❌ Firebase initialization failed:', error);
+  }
 }
 
-const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID
-};
-
-const db = admin.firestore();  // ✅ Correct Firestore instance
-
-export { db, admin };
+export function getDB(): FirebaseFirestore.Firestore {
+  if (!db) throw new Error('❌ Firestore is not initialized');
+  return db;
+}

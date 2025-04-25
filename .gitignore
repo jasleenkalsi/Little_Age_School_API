@@ -1,4 +1,4 @@
 node_modules
 .env
 dist
-echo "little-age-school-api-firebase-adminsdk-*.json" >> .gitignore
+config/little-age-school-api-firebase-adminsdk-*.json" >> .gitignore

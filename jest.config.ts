@@ -1,9 +1,6 @@
 // jest.config.ts
 export default {
-    preset: 'ts-jest',
-    testEnvironment: 'node',
-    transform: {
-      '^.+\\.tsx?$': 'ts-jest',
-    },
-  };
-  
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  setupFiles: ['<rootDir>/jest.setup.ts'], // ✅ add this
+};
